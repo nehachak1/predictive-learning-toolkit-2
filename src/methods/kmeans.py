@@ -79,7 +79,10 @@ class KMeans(object):
         for k in range(self.k):
             # Get all points that belong to cluster k
             points_in_cluster = data[cluster_assignments == k]
-            centers[k] = np.mean(points_in_cluster, axis=0)  # Compute the mean of the points in this cluster
+            if len(points_in_cluster) == 0:
+                centers[k] = data[np.random.randint(data.shape[0])]
+            else:
+                centers[k] = np.mean(points_in_cluster, axis=0)  # Compute the mean of the points in this cluster
         return centers
 
     def __k_means(self, data, max_iter):
@@ -130,7 +133,10 @@ class KMeans(object):
         cluster_center_label = np.zeros(centers.shape[0])
         for k in range(centers.shape[0]):
             points_in_cluster = true_labels[cluster_assignments == k]
-            cluster_center_label[k] = np.argmax(np.bincount(points_in_cluster.astype(int)))  # Mode can be found using bincount and then argmax
+            if len(points_in_cluster) == 0:
+                cluster_center_label[k] = 0
+            else:
+                cluster_center_label[k] = np.argmax(np.bincount(points_in_cluster.astype(int)))  # Mode can be found using bincount and then argmax
         return cluster_center_label
 
     def __predict_with_centers(self, data, centers, cluster_center_label):
