@@ -26,5 +26,5 @@ class Tanh:
     
     @staticmethod
     def gradient(z):
-        return 1 - np.tanh(z) ** 2
+        return 1 - (np.tanh(z) ** 2)
 
