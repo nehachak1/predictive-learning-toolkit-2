@@ -20,8 +20,6 @@ def main(args):
         args (Namespace): arguments that were parsed from the command line (see at the end
                           of this file). Their value can be accessed as "args.argument".
     """
-
-
     dataset_path = args.data_path
     if not os.path.exists(dataset_path):
         raise FileNotFoundError(f"Dataset not found at {dataset_path}")
@@ -70,7 +68,7 @@ def main(args):
         method_obj = DummyClassifier(arg1=1, arg2=2)
 
     elif args.method == "kmeans":
-        method_obj = KMeans(max_iters=args.max_iters, k=args.K)
+        method_obj = KMeans(K=args.K, max_iters=args.max_iters, distance_metric=args.distance_metric)
 
     elif args.method == "mlp":
         input_dim = xtrain.shape[1]
@@ -184,6 +182,12 @@ if __name__ == "__main__":
         action="store_true",
         help="train on whole training data and evaluate on the test data, "
              "otherwise use a validation set",
+    )
+    parser.add_argument(
+        "--distance_metric", 
+        type=str, 
+        default="euclidean", 
+        help="euclidean / manhattan",
     )
     # Feel free to add more arguments here if you need!
 
