@@ -37,9 +37,9 @@ def load_classification_data(data_path, use_test=False):
     return xtrain, ytrain, xvalid, yvalid
 
 
-def run_one_experiment(xtrain, ytrain, xvalid, yvalid, k, max_iters, run, seed):
+def run_one_experiment(xtrain, ytrain, xvalid, yvalid, k, max_iters, run, seed, distance_metric):
     np.random.seed(seed)
-    model = KMeans(max_iters=max_iters, k=k)
+    model = KMeans(K=k, max_iters=max_iters, distance_metric=distance_metric)
 
     # KMeans prints iteration logs; keep experiment output readable.
     with redirect_stdout(StringIO()):
@@ -51,6 +51,7 @@ def run_one_experiment(xtrain, ytrain, xvalid, yvalid, k, max_iters, run, seed):
         "Run": run,
         "Seed": seed,
         "Max Iters": max_iters,
+        "Distance": distance_metric,
         "Train Acc": accuracy_fn(train_preds, ytrain),
         "Val Acc": accuracy_fn(valid_preds, yvalid),
         "Train F1": macrof1_fn(train_preds, ytrain),
@@ -59,7 +60,7 @@ def run_one_experiment(xtrain, ytrain, xvalid, yvalid, k, max_iters, run, seed):
 
 
 def save_results_csv(results, output_path):
-    fieldnames = ["K", "Run", "Seed", "Max Iters", "Train Acc", "Val Acc", "Train F1", "Val F1"]
+    fieldnames = ["K", "Run", "Seed", "Max Iters", "Distance", "Train Acc", "Val Acc", "Train F1", "Val F1"]
     with open(output_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -161,6 +162,7 @@ def print_final_block(results):
     print("\nK-Means:")
     print(f"Number of Clusters: {best['K']}")
     print(f"Maximum Iterations: {best['Max Iters']}")
+    print(f"Distance Metric: {best['Distance']}")
     print(f"Random Initialization Run: {best['Run']}")
     print(f"Validation Accuracy: {best['Val Acc'] / 100:.3f}")
     print(f"Validation F1-score: {best['Val F1']:.3f}")
@@ -187,6 +189,7 @@ def main(args):
                     max_iters=max_iters,
                     run=run,
                     seed=args.seed + run,
+                    distance_metric=args.distance_metric,
                 )
                 results.append(row)
                 print(
@@ -220,18 +223,51 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_path", default="data/features.npz", type=str)
-    parser.add_argument("--output_dir", default="results/kmeans", type=str)
-    parser.add_argument("--k_min", default=2, type=int)
-    parser.add_argument("--k_max", default=30, type=int)
-    parser.add_argument("--runs", default=5, type=int)
+    parser.add_argument(
+        "--data_path",
+        default="data/features.npz", 
+        type=str,
+    )
+    parser.add_argument(
+        "--output_dir", 
+        default="results/kmeans", 
+        type=str,
+    )
+    parser.add_argument(
+        "--k_min", 
+        default=2, 
+        type=int,
+    )
+    parser.add_argument(
+        "--k_max", 
+        default=30, 
+        type=int,
+    )
+    parser.add_argument(
+        "--runs", 
+        default=5, 
+        type=int,
+    )
     parser.add_argument(
         "--max_iters",
         default="200",
         type=str,
         help="single value such as 200, or comma-separated values such as 50,100,200",
     )
-    parser.add_argument("--seed", default=100, type=int)
-    parser.add_argument("--test", action="store_true")
+    parser.add_argument(
+        "--seed", 
+        default=100, 
+        type=int,
+    )
+    parser.add_argument(
+        "--test", 
+        action="store_true",
+    )
+    parser.add_argument(
+        "--distance_metric", 
+        type=str, 
+        default="euclidean", 
+        help="euclidean / manhattan",
+    )
     args = parser.parse_args()
     main(args)
