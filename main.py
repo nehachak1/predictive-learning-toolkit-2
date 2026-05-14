@@ -54,12 +54,22 @@ def main(args):
         xtest, ytest = test_features, test_labels
 
     ### WRITE YOUR CODE HERE to do any other data processing
-    means = np.mean(xtrain, axis=0)
-    stds = np.std(xtrain, axis=0)
-    stds[stds == 0] = 1
+    if args.method == "kmeans" and args.distance_metric == "chi_square": 
+        mins = np.min(xtrain, axis = 0)
+        maxs = np.max(xtrain, axis = 0)
+        ranges = maxs - mins
+        ranges[ranges == 0] = 1
+        
+        xtrain = (xtrain - mins) / ranges
+        xtest = (xtest - mins) / ranges
 
-    xtrain = normalize_fn(xtrain, means, stds)
-    xtest = normalize_fn(xtest, means, stds)
+    else: 
+        means = np.mean(xtrain, axis=0)
+        stds = np.std(xtrain, axis=0)
+        stds[stds == 0] = 1
+
+        xtrain = normalize_fn(xtrain, means, stds)
+        xtest = normalize_fn(xtest, means, stds)
 
     ## 3. Initialize the method you want to use.
 
@@ -162,7 +172,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--K",
         type=int,
-        default=1,
+        default=3,
         help="number of clusters datapoints used for kmeans",
     )
     parser.add_argument(
@@ -187,7 +197,8 @@ if __name__ == "__main__":
         "--distance_metric", 
         type=str, 
         default="euclidean", 
-        help="euclidean / manhattan",
+        choices=["euclidean", "chi_square", "manhattan"],
+        help="euclidean / chi_square / manhattan",
     )
     # Feel free to add more arguments here if you need!
 

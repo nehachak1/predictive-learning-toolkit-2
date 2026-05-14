@@ -60,11 +60,15 @@ class KMeans(object):
         for k in range(centers.shape[0]): 
             if self.distance_metric == "euclidean": 
                 distances[:, k] = np.sqrt(np.sum((data - centers[k]) ** 2, axis = 1))
-            
+            elif self.distance_metric == "chi_square": 
+                eps = 1e-12
+                numerator = (data - centers[k]) ** 2
+                denominator = data + centers[k] + eps
+                distances[:, k] = np.sqrt(np.sum(numerator / denominator, axis = 1))
             elif self.distance_metric == "manhattan": 
                 distances[:, k] = np.sum(np.abs(data - centers[k]), axis = 1)
             else: 
-                raise ValueError("distance_metric must be 'euclidean' or 'manhattan'.")
+                raise ValueError("distance_metric must be 'euclidean', 'chi_square' or 'manhattan'.")
 
         return distances
         

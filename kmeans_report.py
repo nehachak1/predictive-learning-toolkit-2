@@ -13,7 +13,7 @@ from src.methods.kmeans import KMeans
 from src.utils import accuracy_fn, macrof1_fn, normalize_fn
 
 
-def load_classification_data(data_path, use_test=False):
+def load_classification_data(data_path, use_test=False, distance_metric="euclidean"):
     feature_data = np.load(data_path, allow_pickle=True)
     train_features = feature_data["xtrain"]
     test_features = feature_data["xtest"]
@@ -28,12 +28,23 @@ def load_classification_data(data_path, use_test=False):
         xtrain, ytrain = train_features[:num_train], train_labels[:num_train]
         xvalid, yvalid = train_features[num_train:], train_labels[num_train:]
 
-    means = np.mean(xtrain, axis=0)
-    stds = np.std(xtrain, axis=0)
-    stds[stds == 0] = 1
+    if distance_metric == "chi_square": 
+        mins = np.min(xtrain, axis = 0)
+        maxs = np.max(xtrain, axis = 0)
+        ranges = maxs - mins
+        ranges[ranges == 0] = 1
+        
+        xtrain = (xtrain - mins) / ranges
+        xvalid = (xvalid - mins) / ranges
 
-    xtrain = normalize_fn(xtrain, means, stds)
-    xvalid = normalize_fn(xvalid, means, stds)
+    else: 
+        means = np.mean(xtrain, axis=0)
+        stds = np.std(xtrain, axis=0)
+        stds[stds == 0] = 1
+
+        xtrain = normalize_fn(xtrain, means, stds)
+        xvalid = normalize_fn(xvalid, means, stds)
+
     return xtrain, ytrain, xvalid, yvalid
 
 
@@ -92,11 +103,16 @@ def plot_metrics_vs_k(summaries, output_path):
     ]:
         means = np.array([row[f"{metric} Mean"] for row in summaries])
         stds = np.array([row[f"{metric} Std"] for row in summaries])
+
+        if "Acc" in metric:
+            means = means / 100
+            stds = stds / 100
+
         plt.plot(ks, means, marker="o", linewidth=1.8, label=label)
         plt.fill_between(ks, means - stds, means + stds, alpha=0.12)
 
     plt.xlabel("Number of clusters K")
-    plt.ylabel("Score")
+    plt.ylabel("Score between 0 and 1")
     plt.title("K-Means performance as number of clusters changes")
     plt.grid(alpha=0.25)
     plt.legend()
@@ -170,7 +186,7 @@ def print_final_block(results):
 
 def main(args):
     os.makedirs(args.output_dir, exist_ok=True)
-    xtrain, ytrain, xvalid, yvalid = load_classification_data(args.data_path, args.test)
+    xtrain, ytrain, xvalid, yvalid = load_classification_data(args.data_path, args.test, args.distance_metric)
 
     ks = list(range(args.k_min, args.k_max + 1))
     runs = list(range(1, args.runs + 1))
@@ -267,7 +283,8 @@ if __name__ == "__main__":
         "--distance_metric", 
         type=str, 
         default="euclidean", 
-        help="euclidean / manhattan",
+        choices=["euclidean", "chi_square", "manhattan"],
+        help="euclidean / chi_square / manhattan",
     )
     args = parser.parse_args()
     main(args)
