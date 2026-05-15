@@ -4,7 +4,7 @@ import numpy as np
 from src.methods.dummy_methods import DummyClassifier
 from src.methods.mlp import MLP
 from src.losses import MSE
-from src.activations import Sigmoid, ReLU
+from src.activations import Sigmoid, ReLU, Tanh
 from src.methods.kmeans import KMeans
 from src.utils import normalize_fn, append_bias_term, accuracy_fn, macrof1_fn, mse_fn, label_to_onehot, onehot_to_label, get_n_classes
 import os
@@ -82,17 +82,26 @@ def main(args):
 
     elif args.method == "mlp":
         input_dim = xtrain.shape[1]
-        if args.task == "classification":
+        if args.activation == "relu": 
+            hidden_activation = ReLU
+        elif args.activation == "tanh": 
+            hidden_activation = Tanh
+        elif args.activation == "sigmoid": 
+            hidden_activation = Sigmoid
+        else: 
+            raise ValueError("activation must be 'relu', 'tanh' or 'sigmoid'")
+        if args.task == "classification": 
             output_dim = get_n_classes(ytrain)
             method_obj = MLP(
-                dimensions=(input_dim, 32, output_dim),
-                activations=(ReLU, Sigmoid),
-            )
-        else:
+                dimensions=(input_dim, args.hidden_dim, output_dim),
+                activations=(hidden_activation, Sigmoid),
+            )   
+        else: 
             method_obj = MLP(
-                dimensions=(input_dim, 32, 1),
-                activations=(ReLU, ReLU),
-            )
+                dimensions=(input_dim, args.hidden_dim, 1),
+                activations=(hidden_activation, ReLU),
+            )   
+
     else:
         raise ValueError(f"Unknown method: {args.method}")
 
@@ -208,6 +217,19 @@ if __name__ == "__main__":
         default="euclidean", 
         choices=["euclidean", "chi_square", "manhattan"],
         help="euclidean / chi_square / manhattan",
+    )
+    parser.add_argument(
+        "--activation", 
+        type=str,
+        default="relu",
+        choices=["relu", "tanh", "sigmoid"],
+        help="hidden activation function for MLP",
+    )
+    parser.add_argument(
+        "--hidden_dim",
+        type=int,
+        default=32,
+        help="hidden dimension for MLP",
     )
     # Feel free to add more arguments here if you need!
 

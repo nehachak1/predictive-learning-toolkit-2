@@ -15,8 +15,26 @@ class MLP:
         dimensions =  (2,     10,          5)
         activations = (      Sigmoid,      Sigmoid)
         """
+        if len(activations) != len(dimensions) - 1:
+            raise ValueError("The number of activations must be equal to len(dimensions) - 1.")
+        
+        self.dimensions = dimensions
+        self.activations = activations
+        self.n_layers = len(dimensions) - 1
 
-        ### WRITE YOUR CODE HERE
+        self.weights = {}
+        self.biases = {}
+
+        for i in range(1, len(dimensions)): 
+            input_dim = dimensions[i - 1]
+            output_dim = dimensions[i]
+
+            limit = np.sqrt(6 / (input_dim + output_dim))
+            self.weights[i] = np.random.uniform(-limit, limit, (input_dim, output_dim))
+            self.biases[i] = np.zeros((1, output_dim))
+
+        self.learning_rate = None
+        self.loss_history = []
 
     def feed_forward(self, x):
         """
@@ -24,18 +42,24 @@ class MLP:
         :param x: (array) Batch of input data vectors.
         :return: (tpl) Node outputs and activations per layer. The numbering of the output is equivalent to the layer numbers.
         """
+        a = {}
+        z = {}
 
-        ### WRITE YOUR CODE HERE
+        z[0] = x
 
+        for i in range(1, self.n_layers + 1): 
+            a[i] = z[i - 1] @ self.weights[i] + self.biases[i]
+            z[i] = self.activations[i - 1].forward(a[i])
+
+        return z, a
 
     def predict(self, x):
         """
         :param x: (array) Containing parameters
         :return: (array) A 2D array of shape (n_cases, n_classes).
         """
-
-        ### WRITE YOUR CODE HERE
-
+        z, a = self.feed_forward(x)
+        return z[self.n_layers]
 
     def back_prop(self, z, a, y_true, loss):
         """
@@ -50,9 +74,23 @@ class MLP:
         :param loss: Loss class with a static .gradient(y_true, y_pred) method.
         :return:
         """
+        y_pred = z[self.n_layers]
 
-        ### WRITE YOUR CODE HERE
+        delta = loss.gradient(y_true, y_pred)
+        delta = delta * self.activations[self.n_layers - 1].gradient(a[self.n_layers])
 
+        for i in range(self.n_layers, 0, -1):
+            dw = z[i - 1].T @ delta
+
+            if i > 1: 
+                previous_delta = delta @ self.weights[i].T
+                previous_delta = previous_delta * self.activations[i - 2].gradient(a[i - 1])
+            else: 
+                previous_delta = None
+            
+            self.update_w_b(i, dw, delta)
+            
+            delta = previous_delta
 
     def update_w_b(self, index, dw, delta):
         """
@@ -61,8 +99,10 @@ class MLP:
         :param dw: (array) Partial derivatives
         :param delta: (array) Delta error.
         """
+        db = np.sum(delta, axis = 0, keepdims = True)
 
-        ### WRITE YOUR CODE HERE
+        self.weights[index] -= self.learning_rate * dw
+        self.biases[index] -= self.learning_rate * db
 
     def fit(self, x, y_true, loss, epochs, batch_size, learning_rate=1e-3):
         """
@@ -73,5 +113,28 @@ class MLP:
         :param batch_size: (int)
         :param learning_rate: (flt)
         """
+        self.learning_rate = learning_rate
+        n_samples = x.shape[0]
 
-        ### WRITE YOUR CODE HERE
+        if y_true.ndim == 1: 
+            y_true = y_true.reshape(-1, 1)
+
+        for epoch in range(epochs): 
+            indices = np.random.permutation(n_samples)
+            x_shuffled = x[indices]
+            y_shuffled = y_true[indices]
+
+            for start in range(0, n_samples, batch_size): 
+                end = start + batch_size
+                
+                x_batch = x_shuffled[start:end]
+                y_batch = y_shuffled[start:end]
+
+                z, a = self.feed_forward(x_batch)
+                self.back_prop(z, a, y_batch, loss)
+
+            predictions = self.predict(x)
+            current_loss = loss.loss(y_true, predictions)
+            self.loss_history.append(current_loss)
+
+        return self.predict(x)
