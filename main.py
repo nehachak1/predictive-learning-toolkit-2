@@ -124,6 +124,15 @@ def main(args):
         macro_f1 = macrof1_fn(preds, ytest)
         print(f"{'Test' if args.test else 'Validation'} set: accuracy = {acc:.3f}% - F1-score = {macro_f1:.6f}")
 
+        print("\nClass coverage analysis:")
+        print("Ground truth / Predicted")
+
+        for class_id in np.unique(ytest): 
+            true_count = np.sum(ytest == class_id)
+            pred_count = np.sum(preds == class_id)
+            print(f"Class {class_id}: {true_count} / {pred_count} samples")
+    
+
     elif args.task == "regression":
         assert args.method != "kmeans", f"You should use kmeans as a classification method"
         assert args.method == "mlp", f"You should use mlp as a regression method"
