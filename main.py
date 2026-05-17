@@ -116,7 +116,7 @@ def main(args):
                 ytrain_fit,
                 loss=MSE,
                 epochs=args.max_iters,
-                batch_size=32,
+                batch_size=args.batch_size, 
                 learning_rate=args.lr,
             )
             preds_train = onehot_to_label(preds_train)
@@ -152,7 +152,7 @@ def main(args):
             ytrain_fit,
             loss=MSE,
             epochs=args.max_iters,
-            batch_size=32,
+            batch_size=args.batch_size,
             learning_rate=args.lr,
         )
         preds_train = preds_train.squeeze()
@@ -230,6 +230,12 @@ if __name__ == "__main__":
         type=int,
         default=32,
         help="hidden dimension for MLP",
+    )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=32,
+        help="batch size for MLP",
     )
     # Feel free to add more arguments here if you need!
 

@@ -266,7 +266,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--max_iters",
-        default="200",
+        default="50",
         type=str,
         help="single value such as 200, or comma-separated values such as 50,100,200",
     )

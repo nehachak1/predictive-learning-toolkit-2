@@ -105,27 +105,36 @@ def save_results_csv(results, output_path):
         writer.writerows(results)
 
 def plot_results(results, output_path):
-    learning_rates = sorted({row["Learning Rate"] for row in results})
+    best = max(results, key=lambda row: row["Val F1"])
 
-    best_val_f1 = []
-    for lr in learning_rates:
-        rows = [row for row in results if row["Learning Rate"] == lr]
-        best_row = max(rows, key=lambda row: row["Val F1"])
-        best_val_f1.append(best_row["Val F1"] * 100)
+    rows = [
+        row for row in results
+        if row["Hidden Dim"] == best["Hidden Dim"]
+        and row["Batch Size"] == best["Batch Size"]
+        and row["Activation"] == best["Activation"]
+        and row["Max Iters"] == best["Max Iters"]
+    ]
 
-    plt.figure(figsize=(8, 5))
-    plt.plot(
-        learning_rates,
-        best_val_f1,
-        marker="o",
-        label="Best Validation F1-score",
-    )
+    rows = sorted(rows, key=lambda row: row["Learning Rate"])
+
+    learning_rates = np.array([row["Learning Rate"] for row in rows])
+    train_acc = np.array([row["Train Acc"] / 100 for row in rows])
+    val_acc = np.array([row["Val Acc"] / 100 for row in rows])
+    train_f1 = np.array([row["Train F1"] for row in rows])
+    val_f1 = np.array([row["Val F1"] for row in rows])
+
+    plt.figure(figsize=(9, 5))
+
+    plt.plot(learning_rates, train_acc, marker="o", linewidth=1.8, label="Train Accuracy")
+    plt.plot(learning_rates, val_acc, marker="o", linewidth=1.8, label="Validation Accuracy")
+    plt.plot(learning_rates, train_f1, marker="o", linewidth=1.8, label="Train F1")
+    plt.plot(learning_rates, val_f1, marker="o", linewidth=1.8, label="Validation F1")
 
     plt.xscale("log")
     plt.xlabel("Learning Rate")
-    plt.ylabel("Best Validation F1-score (%)")
-    plt.title("MLP Classification - Best Validation F1 vs. Learning Rate")
-    plt.grid(True)
+    plt.ylabel("Score between 0 and 1")
+    plt.title("MLP Classification performance as learning rate changes")
+    plt.grid(alpha=0.25)
     plt.legend()
     plt.tight_layout()
     plt.savefig(output_path, dpi=200)
