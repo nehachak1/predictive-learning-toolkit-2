@@ -59,7 +59,7 @@ def run_one_experiment(
     elif activation_name == "linear":
         hidden_activation = Linear
     else:
-        raise ValueError("activation must be 'relu', 'tanh' or 'sigmoid'")
+        raise ValueError("activation must be 'relu', 'tanh', 'sigmoid' or 'linear'")
 
     model = MLP(
         dimensions=(input_dim, hidden_dim, 1),
@@ -266,49 +266,41 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-
     parser.add_argument(
         "--data_path",
         default="data/features.npz",
         type=str,
     )
-
     parser.add_argument(
         "--output_dir",
         default="results/mlp_regression",
         type=str,
     )
-
     parser.add_argument(
         "--learning_rates",
         default="0.00001,0.0001,0.001,0.01,0.1",
         type=str,
     )
-
     parser.add_argument(
         "--max_iters",
         default="50,100,200",
         type=str,
     )
-
     parser.add_argument(
         "--hidden_dims",
         default="8,16,32,64,128",
         type=str,
     )
-
     parser.add_argument(
         "--activations",
         default="relu,tanh,sigmoid,linear",
         type=str,
     )
-
     parser.add_argument(
         "--seed",
         default=100,
         type=int,
     )
-
     parser.add_argument(
         "--batch_sizes",
         default="16,32,64",
@@ -316,5 +308,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-
     main(args)

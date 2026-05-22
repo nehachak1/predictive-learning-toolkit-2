@@ -55,8 +55,8 @@ def run_one_experiment(xtrain, ytrain, xvalid, yvalid, lr, max_iters, hidden_dim
         raise ValueError("activation must be 'relu', 'tanh' or 'sigmoid'")
 
     model = MLP(
-        dimensions=(input_dim, hidden_dim, output_dim),
-        activations=(hidden_activation, Sigmoid),
+        dimensions = (input_dim, hidden_dim, output_dim),
+        activations = (hidden_activation, Sigmoid),
     )
 
     ytrain_onehot = label_to_onehot(ytrain, C=output_dim)
@@ -99,7 +99,7 @@ def save_results_csv(results, output_path):
         "Val F1",
     ]
 
-    with open(output_path, "w", newline="") as f:
+    with open(output_path, "w", newline = "") as f:
         writer = csv.DictWriter(f, fieldnames = fieldnames)
         writer.writeheader()
         writer.writerows(results)
@@ -115,7 +115,7 @@ def plot_results(results, output_path):
         and row["Max Iters"] == best["Max Iters"]
     ]
 
-    rows = sorted(rows, key=lambda row: row["Learning Rate"])
+    rows = sorted(rows, key = lambda row: row["Learning Rate"])
 
     learning_rates = np.array([row["Learning Rate"] for row in rows])
     train_acc = np.array([row["Train Acc"] / 100 for row in rows])
@@ -123,12 +123,12 @@ def plot_results(results, output_path):
     train_f1 = np.array([row["Train F1"] for row in rows])
     val_f1 = np.array([row["Val F1"] for row in rows])
 
-    plt.figure(figsize=(9, 5))
+    plt.figure(figsize = (9, 5))
 
-    plt.plot(learning_rates, train_acc, marker="o", linewidth=1.8, label="Train Accuracy")
-    plt.plot(learning_rates, val_acc, marker="o", linewidth=1.8, label="Validation Accuracy")
-    plt.plot(learning_rates, train_f1, marker="o", linewidth=1.8, label="Train F1")
-    plt.plot(learning_rates, val_f1, marker="o", linewidth=1.8, label="Validation F1")
+    plt.plot(learning_rates, train_acc, marker = "o", linewidth = 1.8, label = "Train Accuracy")
+    plt.plot(learning_rates, val_acc, marker = "o", linewidth = 1.8, label = "Validation Accuracy")
+    plt.plot(learning_rates, train_f1, marker = "o", linewidth = 1.8, label = "Train F1")
+    plt.plot(learning_rates, val_f1, marker = "o", linewidth = 1.8, label = "Validation F1")
 
     plt.xscale("log")
     plt.xlabel("Learning Rate")
@@ -187,10 +187,10 @@ def main(args):
                         results.append(row)
 
                         print(
-                            f"activation={activation}, hidden_dim={hidden_dim}, "
-                            f"batch_size={batch_size}, max_iters={max_iters}, lr={lr}: "
-                            f"train_acc={row['Train Acc']:.2f}, val_acc={row['Val Acc']:.2f}, "
-                            f"train_f1={row['Train F1']:.3f}, val_f1={row['Val F1']:.3f}"
+                            f"activation = {activation}, hidden_dim = {hidden_dim}, "
+                            f"batch_size = {batch_size}, max_iters = {max_iters}, lr = {lr}: "
+                            f"train_acc = {row['Train Acc']:.2f}, val_acc = {row['Val Acc']:.2f}, "
+                            f"train_f1 = {row['Train F1']:.3f}, val_f1 = {row['Val F1']:.3f}"
                         )
 
     csv_path = os.path.join(args.output_dir, "mlp_classification_results.csv")
@@ -218,22 +218,22 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--learning_rates",
-        default="0.00001,0.0001,0.001,0.01,0.1",
+        default="0.00001, 0.0001, 0.001, 0.01, 0.1",
         type=str,
     )
     parser.add_argument(
         "--max_iters",
-        default="50,100,200",
+        default="50, 100, 200",
         type=str,
     )
     parser.add_argument(
         "--hidden_dims",
-        default="8,16,32,64,128",
+        default="8, 16, 32, 64, 128",
         type=str,
     )
     parser.add_argument(
         "--activations",
-        default="relu,tanh,sigmoid",
+        default="relu, tanh, sigmoid",
         type=str,
     )
     parser.add_argument(
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--batch_sizes",
-        default="16,32,64",
+        default="16, 32, 64",
         type=str,
     )
 

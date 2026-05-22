@@ -6,7 +6,7 @@ from src.methods.mlp import MLP
 from src.losses import MSE
 from src.activations import Sigmoid, ReLU, Tanh, Linear
 from src.methods.kmeans import KMeans
-from src.utils import normalize_fn, append_bias_term, accuracy_fn, macrof1_fn, mse_fn, label_to_onehot, onehot_to_label, get_n_classes
+from src.utils import normalize_fn, accuracy_fn, macrof1_fn, mse_fn, label_to_onehot, onehot_to_label, get_n_classes
 import os
 
 np.random.seed(100)
@@ -91,7 +91,7 @@ def main(args):
         elif args.activation == "linear":
             hidden_activation = Linear
         else: 
-            raise ValueError("activation must be 'relu', 'tanh' or 'sigmoid'")
+            raise ValueError("activation must be 'relu', 'tanh', 'sigmoid' or 'linear'")
         if args.task == "classification": 
             output_dim = get_n_classes(ytrain)
             method_obj = MLP(

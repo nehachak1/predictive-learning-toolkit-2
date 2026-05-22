@@ -13,8 +13,8 @@ from src.methods.kmeans import KMeans
 from src.utils import accuracy_fn, macrof1_fn, normalize_fn
 
 
-def load_classification_data(data_path, use_test=False, distance_metric="euclidean"):
-    feature_data = np.load(data_path, allow_pickle=True)
+def load_classification_data(data_path, use_test = False, distance_metric = "euclidean"):
+    feature_data = np.load(data_path, allow_pickle = True)
     train_features = feature_data["xtrain"]
     test_features = feature_data["xtest"]
     train_labels = feature_data["ytrainclassif"].astype(int)
@@ -50,7 +50,7 @@ def load_classification_data(data_path, use_test=False, distance_metric="euclide
 
 def run_one_experiment(xtrain, ytrain, xvalid, yvalid, k, max_iters, run, seed, distance_metric):
     np.random.seed(seed)
-    model = KMeans(K=k, max_iters=max_iters, distance_metric=distance_metric)
+    model = KMeans(K = k, max_iters = max_iters, distance_metric = distance_metric)
 
     # KMeans prints iteration logs; keep experiment output readable.
     with redirect_stdout(StringIO()):
@@ -72,8 +72,8 @@ def run_one_experiment(xtrain, ytrain, xvalid, yvalid, k, max_iters, run, seed, 
 
 def save_results_csv(results, output_path):
     fieldnames = ["K", "Run", "Seed", "Max Iters", "Distance", "Train Acc", "Val Acc", "Train F1", "Val F1"]
-    with open(output_path, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+    with open(output_path, "w", newline = "") as f:
+        writer = csv.DictWriter(f, fieldnames = fieldnames)
         writer.writeheader()
         writer.writerows(results)
 
@@ -108,21 +108,21 @@ def plot_metrics_vs_k(summaries, output_path):
             means = means / 100
             stds = stds / 100
 
-        plt.plot(ks, means, marker="o", linewidth=1.8, label=label)
-        plt.fill_between(ks, means - stds, means + stds, alpha=0.12)
+        plt.plot(ks, means, marker="o", linewidth = 1.8, label = label)
+        plt.fill_between(ks, means - stds, means + stds, alpha = 0.12)
 
     plt.xlabel("Number of clusters K")
     plt.ylabel("Score between 0 and 1")
     plt.title("K-Means performance as number of clusters changes")
-    plt.grid(alpha=0.25)
+    plt.grid(alpha = 0.25)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(output_path, dpi=200)
+    plt.savefig(output_path, dpi = 200)
     plt.close()
 
 
 def plot_initialization_stability(results, output_path):
-    plt.figure(figsize=(9, 5))
+    plt.figure(figsize = (9, 5))
     runs = sorted({row["Run"] for row in results})
 
     for run in runs:
@@ -130,19 +130,19 @@ def plot_initialization_stability(results, output_path):
         plt.plot(
             [row["K"] for row in rows],
             [row["Val F1"] for row in rows],
-            marker="o",
-            linewidth=1.4,
-            alpha=0.8,
-            label=f"Run {run}",
+            marker = "o",
+            linewidth = 1.4,
+            alpha = 0.8,
+            label = f"Run {run}",
         )
 
     plt.xlabel("Number of clusters K")
     plt.ylabel("Validation macro F1-score")
     plt.title("Random initialization stability")
-    plt.grid(alpha=0.25)
+    plt.grid(alpha = 0.25)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(output_path, dpi=200)
+    plt.savefig(output_path, dpi = 200)
     plt.close()
 
 
@@ -160,14 +160,14 @@ def plot_heatmap(results, output_path):
             ]
             grid[i, j] = np.mean(values)
 
-    plt.figure(figsize=(9, 5))
-    image = plt.imshow(grid, aspect="auto", origin="lower", cmap="viridis")
+    plt.figure(figsize = (9, 5))
+    image = plt.imshow(grid, aspect = "auto", origin = "lower", cmap = "viridis")
     plt.xticks(range(len(ks)), ks)
     plt.yticks(range(len(max_iters_values)), max_iters_values)
     plt.xlabel("Number of clusters K")
     plt.ylabel("Maximum iterations")
     plt.title("Validation F1-score heatmap")
-    plt.colorbar(image, label="Validation macro F1-score")
+    plt.colorbar(image, label = "Validation macro F1-score")
     plt.tight_layout()
     plt.savefig(output_path, dpi=200)
     plt.close()
@@ -286,5 +286,6 @@ if __name__ == "__main__":
         choices=["euclidean", "chi_square", "manhattan"],
         help="euclidean / chi_square / manhattan",
     )
+
     args = parser.parse_args()
     main(args)
