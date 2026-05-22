@@ -27,4 +27,13 @@ class Tanh:
     @staticmethod
     def gradient(z):
         return 1 - (np.tanh(z) ** 2)
+    
+class Linear:
+    @staticmethod
+    def forward(z):
+        return z
+    
+    @staticmethod
+    def gradient(z):
+        return np.ones_like(z)
 

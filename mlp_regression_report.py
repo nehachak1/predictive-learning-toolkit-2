@@ -7,7 +7,7 @@ os.environ.setdefault("MPLCONFIGDIR", os.path.join(os.getcwd(), ".matplotlib_cac
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.activations import ReLU, Sigmoid, Tanh
+from src.activations import ReLU, Sigmoid, Tanh, Linear
 from src.losses import MSE
 from src.methods.mlp import MLP
 from src.utils import normalize_fn, mse_fn
@@ -56,6 +56,8 @@ def run_one_experiment(
         hidden_activation = Tanh
     elif activation_name == "sigmoid":
         hidden_activation = Sigmoid
+    elif activation_name == "linear":
+        hidden_activation = Linear
     else:
         raise ValueError("activation must be 'relu', 'tanh' or 'sigmoid'")
 
@@ -297,7 +299,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--activations",
-        default="relu,tanh,sigmoid",
+        default="relu,tanh,sigmoid,linear",
         type=str,
     )
 

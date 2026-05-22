@@ -4,7 +4,7 @@ import numpy as np
 from src.methods.dummy_methods import DummyClassifier
 from src.methods.mlp import MLP
 from src.losses import MSE
-from src.activations import Sigmoid, ReLU, Tanh
+from src.activations import Sigmoid, ReLU, Tanh, Linear
 from src.methods.kmeans import KMeans
 from src.utils import normalize_fn, append_bias_term, accuracy_fn, macrof1_fn, mse_fn, label_to_onehot, onehot_to_label, get_n_classes
 import os
@@ -88,6 +88,8 @@ def main(args):
             hidden_activation = Tanh
         elif args.activation == "sigmoid": 
             hidden_activation = Sigmoid
+        elif args.activation == "linear":
+            hidden_activation = Linear
         else: 
             raise ValueError("activation must be 'relu', 'tanh' or 'sigmoid'")
         if args.task == "classification": 
@@ -222,7 +224,7 @@ if __name__ == "__main__":
         "--activation", 
         type=str,
         default="relu",
-        choices=["relu", "tanh", "sigmoid"],
+        choices=["relu", "tanh", "sigmoid", "linear"],
         help="hidden activation function for MLP",
     )
     parser.add_argument(
