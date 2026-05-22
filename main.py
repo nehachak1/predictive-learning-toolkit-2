@@ -101,7 +101,7 @@ def main(args):
         else: 
             method_obj = MLP(
                 dimensions=(input_dim, args.hidden_dim, 1),
-                activations=(hidden_activation, ReLU),
+                activations=(hidden_activation, Linear),
             )   
 
     else:

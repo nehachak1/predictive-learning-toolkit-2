@@ -63,7 +63,7 @@ def run_one_experiment(
 
     model = MLP(
         dimensions=(input_dim, hidden_dim, 1),
-        activations=(hidden_activation, ReLU),
+        activations=(hidden_activation, Linear),
     )
 
     ytrain_fit = ytrain.reshape(-1, 1)
