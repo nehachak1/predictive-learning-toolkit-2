@@ -14,7 +14,7 @@ from src.utils import normalize_fn, mse_fn
 
 
 def load_regression_data(data_path):
-    feature_data = np.load(data_path, allow_pickle=True)
+    feature_data = np.load(data_path, allow_pickle = True)
 
     train_features = feature_data["xtrain"]
     train_labels = feature_data["ytrainreg"]
@@ -24,8 +24,8 @@ def load_regression_data(data_path):
     xtrain, ytrain = train_features[:num_train], train_labels[:num_train]
     xvalid, yvalid = train_features[num_train:], train_labels[num_train:]
 
-    means = np.mean(xtrain, axis=0)
-    stds = np.std(xtrain, axis=0)
+    means = np.mean(xtrain, axis = 0)
+    stds = np.std(xtrain, axis = 0)
     stds[stds == 0] = 1
 
     xtrain = normalize_fn(xtrain, means, stds)
@@ -62,8 +62,8 @@ def run_one_experiment(
         raise ValueError("activation must be 'relu', 'tanh', 'sigmoid' or 'linear'")
 
     model = MLP(
-        dimensions=(input_dim, hidden_dim, 1),
-        activations=(hidden_activation, Linear),
+        dimensions = (input_dim, hidden_dim, 1),
+        activations = (hidden_activation, Linear),
     )
 
     ytrain_fit = ytrain.reshape(-1, 1)
@@ -71,10 +71,10 @@ def run_one_experiment(
     train_preds = model.fit(
         xtrain,
         ytrain_fit,
-        loss=MSE,
-        epochs=max_iters,
-        batch_size=batch_size,
-        learning_rate=lr,
+        loss = MSE,
+        epochs = max_iters,
+        batch_size = batch_size,
+        learning_rate = lr,
     )
 
     train_preds = train_preds.squeeze()
@@ -102,8 +102,8 @@ def save_results_csv(results, output_path):
         "Val MSE",
     ]
 
-    with open(output_path, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+    with open(output_path, "w", newline = "") as f:
+        writer = csv.DictWriter(f, fieldnames = fieldnames)
         writer.writeheader()
         writer.writerows(results)
 
@@ -115,7 +115,7 @@ def plot_results(results, output_path):
     """
 
     # Find best global config to keep other params fixed
-    best = min(results, key=lambda row: row["Val MSE"])
+    best = min(results, key = lambda row: row["Val MSE"])
 
     fixed_activation = best["Activation"]
     fixed_batch_size = best["Batch Size"]
@@ -123,7 +123,7 @@ def plot_results(results, output_path):
 
     hidden_dims = sorted(list(set(row["Hidden Dim"] for row in results)))
 
-    plt.figure(figsize=(9, 5))
+    plt.figure(figsize = (9, 5))
 
     for hidden_dim in hidden_dims:
 
@@ -148,9 +148,9 @@ def plot_results(results, output_path):
         plt.plot(
             learning_rates,
             val_mse,
-            marker="o",
-            linewidth=1.8,
-            label=f"Hidden Dim = {hidden_dim}",
+            marker = "o",
+            linewidth = 1.8,
+            label = f"Hidden Dim = {hidden_dim}",
         )
 
     plt.xscale("log")
@@ -164,16 +164,16 @@ def plot_results(results, output_path):
         f"max_iters={fixed_max_iters})"
     )
 
-    plt.grid(alpha=0.25)
+    plt.grid(alpha = 0.25)
     plt.legend()
     plt.tight_layout()
 
-    plt.savefig(output_path, dpi=200)
+    plt.savefig(output_path, dpi = 200)
     plt.close()
 
 
 def print_final_block(results):
-    best = min(results, key=lambda row: row["Val MSE"])
+    best = min(results, key = lambda row: row["Val MSE"])
 
     print("\nMLP Regression:")
     print(f"Learning rate: {best['Learning Rate']}")
@@ -185,34 +185,15 @@ def print_final_block(results):
 
 
 def main(args):
-    os.makedirs(args.output_dir, exist_ok=True)
+    os.makedirs(args.output_dir, exist_ok = True)
 
     xtrain, ytrain, xvalid, yvalid = load_regression_data(args.data_path)
 
-    learning_rates = [
-        float(value.strip())
-        for value in args.learning_rates.split(",")
-    ]
-
-    hidden_dims = [
-        int(value.strip())
-        for value in args.hidden_dims.split(",")
-    ]
-
-    batch_sizes = [
-        int(value.strip())
-        for value in args.batch_sizes.split(",")
-    ]
-
-    max_iters_values = [
-        int(value.strip())
-        for value in args.max_iters.split(",")
-    ]
-
-    activations = [
-        value.strip()
-        for value in args.activations.split(",")
-    ]
+    learning_rates = [float(value.strip()) for value in args.learning_rates.split(",")]
+    hidden_dims = [int(value.strip()) for value in args.hidden_dims.split(",")]
+    batch_sizes = [int(value.strip()) for value in args.batch_sizes.split(",")]
+    max_iters_values = [int(value.strip()) for value in args.max_iters.split(",")]
+    activations = [value.strip() for value in args.activations.split(",")]
 
     results = []
 
@@ -227,12 +208,12 @@ def main(args):
                             ytrain,
                             xvalid,
                             yvalid,
-                            lr=lr,
-                            max_iters=max_iters,
-                            hidden_dim=hidden_dim,
-                            batch_size=batch_size,
-                            activation_name=activation,
-                            seed=args.seed,
+                            lr = lr,
+                            max_iters = max_iters,
+                            hidden_dim = hidden_dim,
+                            batch_size = batch_size,
+                            activation_name = activation,
+                            seed = args.seed,
                         )
 
                         results.append(row)
@@ -245,15 +226,8 @@ def main(args):
                             f"val_mse={row['Val MSE']:.6f}"
                         )
 
-    csv_path = os.path.join(
-        args.output_dir,
-        "mlp_regression_results.csv",
-    )
-
-    plot_path = os.path.join(
-        args.output_dir,
-        "mlp_regression_learning_rate_plot.png",
-    )
+    csv_path = os.path.join(args.output_dir, "mlp_regression_results.csv")
+    plot_path = os.path.join(args.output_dir, "mlp_regression_learning_rate_plot.png")
 
     save_results_csv(results, csv_path)
     plot_results(results, plot_path)
