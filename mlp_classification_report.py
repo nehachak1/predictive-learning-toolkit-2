@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.activations import ReLU, Sigmoid, Tanh
-from src.losses import MSE
+from src.losses import CrossEntropy
 from src.methods.mlp import MLP
 from src.utils import (
     accuracy_fn,
@@ -79,7 +79,7 @@ def run_one_experiment(
     train_preds = model.fit(
         xtrain,
         ytrain_onehot,
-        loss = MSE,
+        loss = CrossEntropy,
         epochs = max_iters,
         batch_size = batch_size,
         learning_rate = lr,

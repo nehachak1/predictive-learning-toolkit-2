@@ -3,7 +3,7 @@ import numpy as np
 
 from src.methods.dummy_methods import DummyClassifier
 from src.methods.mlp import MLP
-from src.losses import MSE
+from src.losses import MSE, CrossEntropy
 from src.activations import Sigmoid, ReLU, Tanh, Linear
 from src.methods.kmeans import KMeans
 from src.utils import normalize_fn, accuracy_fn, macrof1_fn, mse_fn, label_to_onehot, onehot_to_label, get_n_classes
@@ -116,7 +116,7 @@ def main(args):
             preds_train = method_obj.fit(
                 xtrain,
                 ytrain_fit,
-                loss = MSE,
+                loss = CrossEntropy,
                 epochs = args.max_iters,
                 batch_size = args.batch_size, 
                 learning_rate = args.lr,
