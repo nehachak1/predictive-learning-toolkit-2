@@ -13,7 +13,7 @@ from src.methods.kmeans import KMeans
 from src.utils import accuracy_fn, macrof1_fn, normalize_fn
 
 
-def load_classification_data(data_path, use_test = False, distance_metric = "euclidean"):
+def load_classification_data(data_path, use_test=False, distance_metric="euclidean"):
     feature_data = np.load(data_path, allow_pickle = True)
     train_features = feature_data["xtrain"]
     test_features = feature_data["xtest"]

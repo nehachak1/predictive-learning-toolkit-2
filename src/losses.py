@@ -13,25 +13,19 @@ class MSE:
     @staticmethod
     def gradient(y_true, y_pred):
         return 2 * (y_pred - y_true) / y_true.shape[0]
+    
 
-class RMSE:
+class CrossEntropy: 
     @staticmethod
-    def loss(y_true, y_pred):
-        return np.sqrt(np.mean((y_true - y_pred) ** 2))
+    def loss(y_true, y_pred): 
+        eps = 1e-12
+        y_pred = np.clip(y_pred, eps, 1 - eps)
+
+        return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
     
     @staticmethod
     def gradient(y_true, y_pred):
         eps = 1e-12
-        mse = np.mean((y_true - y_pred) ** 2)
-        return (y_pred - y_true) / (y_true.shape[0] * np.sqrt(mse + eps))
-    
-class MAE: 
-    @staticmethod
-    def loss(y_true, y_pred):
-        return np.mean(np.abs(y_pred - y_true))
+        y_pred = np.clip(y_pred, eps, 1 - eps)
 
-    @staticmethod
-    def gradient(y_true, y_pred):
-        return np.sign(y_pred - y_true) / y_true.shape[0]
-    
-
+        return (y_pred - y_true) / (y_pred * (1 - y_pred) * y_true.size)

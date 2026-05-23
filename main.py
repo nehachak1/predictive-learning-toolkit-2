@@ -3,7 +3,7 @@ import numpy as np
 
 from src.methods.dummy_methods import DummyClassifier
 from src.methods.mlp import MLP
-from src.losses import MSE
+from src.losses import MSE, CrossEntropy
 from src.activations import Sigmoid, ReLU, Tanh, Linear
 from src.methods.kmeans import KMeans
 from src.utils import normalize_fn, accuracy_fn, macrof1_fn, mse_fn, label_to_onehot, onehot_to_label, get_n_classes
@@ -64,8 +64,8 @@ def main(args):
         xtest = (xtest - mins) / ranges
 
     else: 
-        means = np.mean(xtrain, axis=0)
-        stds = np.std(xtrain, axis=0)
+        means = np.mean(xtrain, axis = 0)
+        stds = np.std(xtrain, axis = 0)
         stds[stds == 0] = 1
 
         xtrain = normalize_fn(xtrain, means, stds)
@@ -75,10 +75,10 @@ def main(args):
 
     # Follow the "DummyClassifier" example for your methods
     if args.method == "dummy_classifier":
-        method_obj = DummyClassifier(arg1=1, arg2=2)
+        method_obj = DummyClassifier(arg1 = 1, arg2 = 2)
 
     elif args.method == "kmeans":
-        method_obj = KMeans(K=args.K, max_iters=args.max_iters, distance_metric=args.distance_metric)
+        method_obj = KMeans(K = args.K, max_iters = args.max_iters, distance_metric = args.distance_metric)
 
     elif args.method == "mlp":
         input_dim = xtrain.shape[1]
@@ -95,13 +95,13 @@ def main(args):
         if args.task == "classification": 
             output_dim = get_n_classes(ytrain)
             method_obj = MLP(
-                dimensions=(input_dim, args.hidden_dim, output_dim),
-                activations=(hidden_activation, Sigmoid),
+                dimensions = (input_dim, args.hidden_dim, output_dim),
+                activations = (hidden_activation, Sigmoid),
             )   
         else: 
             method_obj = MLP(
-                dimensions=(input_dim, args.hidden_dim, 1),
-                activations=(hidden_activation, Linear),
+                dimensions = (input_dim, args.hidden_dim, 1),
+                activations = (hidden_activation, Linear),
             )   
 
     else:
@@ -116,10 +116,10 @@ def main(args):
             preds_train = method_obj.fit(
                 xtrain,
                 ytrain_fit,
-                loss=MSE,
-                epochs=args.max_iters,
-                batch_size=args.batch_size, 
-                learning_rate=args.lr,
+                loss = CrossEntropy,
+                epochs = args.max_iters,
+                batch_size = args.batch_size, 
+                learning_rate = args.lr,
             )
             preds_train = onehot_to_label(preds_train)
             preds = onehot_to_label(method_obj.predict(xtest))
@@ -152,10 +152,10 @@ def main(args):
         preds_train = method_obj.fit(
             xtrain,
             ytrain_fit,
-            loss=MSE,
-            epochs=args.max_iters,
-            batch_size=args.batch_size,
-            learning_rate=args.lr,
+            loss = MSE,
+            epochs = args.max_iters,
+            batch_size = args.batch_size,
+            learning_rate = args.lr,
         )
         preds_train = preds_train.squeeze()
         preds = method_obj.predict(xtest).squeeze()
