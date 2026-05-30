@@ -1,4 +1,4 @@
-# Predictive learning toolkit 2
+# Predictive modelling toolkit 2
 
 A machine learning project implementing Multi-Layer Perceptrons (MLP) and K-Means Clustering from scratch using NumPy. The project explores supervised and unsupervised learning techniques without relying on external machine learning frameworks.
 
