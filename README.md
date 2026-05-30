@@ -53,8 +53,8 @@ A machine learning project implementing Multi-Layer Perceptrons (MLP) and K-Mean
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/neurocluster.git
-cd neurocluster
+git clone https://github.com/yourusername/predictive-learning-toolkit-2.git
+cd predictive-learning-toolkit-2
 
 pip install numpy
 ```
